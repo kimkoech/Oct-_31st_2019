@@ -1,0 +1,88 @@
+---
+title: "report"
+author: "Billy Koech"
+date: "10/31/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(googlesheets4)
+library(infer)
+
+```
+
+
+## Import train data and play around
+
+
+```{r}
+# Import train data by sheet ID
+
+sheets_deauth()
+x <- read_sheet("1QV7o63fiZdNtMtLQfdwREapf8eYDjpfSRX0dgfNrB8A")
+
+
+# 
+linear_model <- lm(att_start ~age, data = x)
+
+summary(linear_model)
+
+
+# Compare att_start to age
+ggplot(x, aes(x = att_start, y = age)) + geom_point()
+
+
+# hist of att_start
+ggplot(x, aes(x = att_start)) + geom_bar()
+
+
+# plot scatter
+ggplot(x, aes(x = att_start)) + geom_freqpoly()
+
+```
+
+```{r}
+# group by and show the 
+x %>% 
+  group_by(treatment) %>% 
+  summarise(avg = mean(att_start))
+
+
+```
+
+
+
+```{r}
+# plot with categorical variable
+
+
+x %>% 
+  group_by(liberal) %>% 
+  summarise(att_start_mean = mean(att_start)) %>% 
+  ggplot(aes(x = as_factor(liberal), y = att_start_mean)) + 
+  geom_col()
+
+
+x %>% ggplot(aes(x = as.factor(liberal), y = att_start)) + geom_boxplot()
+
+
+x %>% ggplot(aes(x = republican, y = att_start)) +
+  geom_jitter(width = 0.2) + 
+  geom_smooth(method = lm)
+
+
+x %>% ggplot(aes(x = age, y = att_start)) +
+  geom_jitter(width = 0.2) + 
+  geom_smooth(method = lm)
+
+
+x %>% ggplot(aes(x = income, y = att_start)) +
+  geom_jitter() + 
+  geom_smooth(method = lm)
+```
+
+
+
